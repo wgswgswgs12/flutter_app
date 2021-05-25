@@ -175,7 +175,7 @@ class inputTable extends StatelessWidget{
 
       ),
 
-    ),
+    );
   }
 
 }
