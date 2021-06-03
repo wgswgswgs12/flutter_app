@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import "PageView.dart";
 import 'taskView.dart';
-
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 var userName;
 
 
@@ -47,6 +47,13 @@ class loginpage extends StatelessWidget {
 
         child: Column(
           children: <Widget>[
+            SignInButton(
+            Buttons.GoogleDark,
+            text: "Sign up with Google",
+            onPressed: () =>
+                _signIn().then((User user) => print(user)).catchError((e) =>
+                    print(e)),
+          ),
           RaisedButton(child: Text('login'),
             onPressed: () =>
                 _signIn().then((User user) => print(user)).catchError((e) =>

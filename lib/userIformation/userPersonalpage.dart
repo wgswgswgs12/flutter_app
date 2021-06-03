@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/loginpage.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_app/taskView.dart';
+
 
 class userPersonalpage extends StatelessWidget{
   String userNickname="";
@@ -74,7 +77,7 @@ class userPersonalpage extends StatelessWidget{
                             child:ListView(
 
                               children: <Widget>[
-                            GFCard(
+                              GFCard(
                               boxFit: BoxFit.cover,
                               titlePosition: GFPosition.start,
                               image: Image.asset('assets/images/1970-01-01 08.00.00 ___yu51316_profilepic.jpg'),
@@ -92,10 +95,10 @@ class userPersonalpage extends StatelessWidget{
                                     backgroundColor: GFColors.PRIMARY,
                                     child: Icon(Icons.share, color: Colors.white,),
                                   ),
-                                  GFAvatar(
-                                    backgroundColor: GFColors.SECONDARY,
-                                    child: Icon(Icons.search, color: Colors.white,),
-                                  ),
+                                  GFIconButton( icon: Icon(Icons.search,color: Colors.white,) ,
+                                      onPressed:()=> Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => taskView()))),
+
                                   GFAvatar(
                                     backgroundColor: GFColors.SUCCESS,
                                     child: Icon(Icons.phone, color: Colors.white,),
@@ -114,9 +117,12 @@ class userPersonalpage extends StatelessWidget{
 
                            */
                       }else{
-                        return Center(
+                        return inputTable();
+
+                          /*Center(
                             child: Text( '非常抱歉 您還未新增您的個人訊息 請至新增填寫:'),
-                        );
+
+                        );*/
                       }
                     }else{
                       return Center(
@@ -134,48 +140,125 @@ class userPersonalpage extends StatelessWidget{
     );
   }
 }
+class inputTable extends StatelessWidget {
+  DateTime update;
 
-class inputTable extends StatelessWidget{
-
-
-
-
-
-
-
-  final TextEditingController userBirthYear= new TextEditingController();
-  final TextEditingController userBirthMonth = new TextEditingController();
-  final TextEditingController rewardController = new TextEditingController();
+  final maxLines = 5;
+  final TextEditingController userNickname = new TextEditingController();
   final TextEditingController userIntroduction = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return TextField(
-      controller:userBirthYear,
-      decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          /*边角*/
-          borderRadius: BorderRadius.all(
-            Radius.circular(30), //边角为30
-          ),
-          borderSide: BorderSide(
-            color: Colors.amber, //边线颜色为黄色
-            width: 2, //边线宽度为2
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.green, //边框颜色为绿色
-            width: 5, //宽度为5
-          ),
-        ),
-        border: OutlineInputBorder(),
-        labelText: '輸入任務標題',
+    return Column(
+        children: <Widget>[
+          TextField(
+            controller: userNickname,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                /*边角*/
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30), //边角为30
+                ),
+                borderSide: BorderSide(
+                  color: Colors.amber, //边线颜色为黄色
+                  width: 0.5, //边线宽度为0.5
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.green, //边框颜色为绿色
+                  width: 2, //宽度为5
+                ),
+              ),
+              border: OutlineInputBorder(),
+              labelText: '輸入暱稱',
+              helperText: '您可以在之後變更暱稱',
+              //counterText: '0 characters'
+            ),
 
-      ),
+          ),
+          TextField(
+            controller: userIntroduction,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                /*边角*/
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30), //边角为30
+                ),
+                borderSide: BorderSide(
+                  color: Colors.amber, //边线颜色为黄色
+                  width: 0.5, //边线宽度为0.5
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.green, //边框颜色为绿色
+                  width: 2, //宽度为2
+                ),
+              ),
+              border: OutlineInputBorder(),
+              labelText: '輸入自我介紹',
+              helperText: '清楚地介紹可以更快的認識您!',
+              //counterText: '0 characters'
+            ),
 
+          ),
+
+          TextButton(
+              onPressed: () {
+                DatePicker.showDatePicker(context,
+                    showTitleActions: true,
+                    minTime: DateTime(1950, 1, 1),
+                    maxTime: DateTime(2020, 12, 31),
+                    onChanged: (date) {
+                      print('change $date');
+                    },
+                    onConfirm: (date) {
+                      print('confirm $date');
+                      update = date;
+                    },
+                    currentTime: DateTime.now(),
+                    locale: LocaleType.zh);
+              },
+              child: Text(
+                '選擇您的生日 ',
+                style: TextStyle(color: Colors.blue),
+              )),
+          GFButton(
+              shape:GFButtonShape.pills,
+
+              onPressed: creat,
+              text:"送出資料"
+          ),
+          GFToast(
+            text: '您還沒有建立個人資料，請先填入您的基本資料!',
+            animationDuration: Duration(hours: 0, minutes: 0, seconds: 3),
+            autoDismiss: true,
+          ),
+
+        ]
     );
   }
 
+
+  void creat() async {
+    if (update == null) {
+      print('請輸入時間');
+    } else {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      await firestore.collection("userIformation")
+          .doc(userName)
+          .set({
+
+        'userBirthYear': update.year,
+        'userBirthMonth': update.month,
+        'userBirthDay': update.day,
+        'userIntroduction': userIntroduction.text,
+        'userNickname': userNickname.text,
+
+      });
+    }
+  }
 }

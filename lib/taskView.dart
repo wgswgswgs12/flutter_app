@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:geolocator/geolocator.dart';
 import 'local.dart';
 import 'loginpage.dart';
@@ -96,7 +97,6 @@ class taskView extends StatefulWidget {
         title: Text("目前任務"),
       ),
        body: Center(
-
                child:Column(
                   children: <Widget>[
                       FutureBuilder(
@@ -115,18 +115,34 @@ class taskView extends StatefulWidget {
                               if (snapshot.hasData) {
                                       DocumentSnapshot ds=snapshot.data;
                                        if(ds.exists) {
-                                            return Center(
+                                            return GFAccordion(
+                                                title: '${ds['title']}',
+                                                content: '發布人: ${ds['TaskuserName']} '
+                                                    '\n 內容: ${ds['content']}'
+                                                    '\n 距離: ${ds['m']} 公尺'
+                                                    '\n 獎勵: ${ds['reward']}'
+                                                    '\n 備註:${ds['Remarks']}',
+                                                collapsedIcon: Icon(Icons.add),
+                                                expandedIcon: Icon(Icons.minimize),
+                                                showAccordion:true,
 
-                                                 child: Text('Do something with your snapshot.data : \n 備註:${ds['Remarks']}\n 發布人: ${ds['TaskuserName']} \n 標題: ${ds['content']}'),
-                                                  );
-                                                       }else{
+                                            );
+                                              /*Center(
+                                                 child: Text('這是您目前的任務: '
+                                                     '\n 標題 : ${ds['title']}'
+                                                     '\n 發布人: ${ds['TaskuserName']} '
+                                                     '\n 內容: ${ds['content']}'
+                                                     '\n 距離: ${ds['m']} 公尺'
+                                                     '\n 獎勵: ${ds['reward']}'
+                                                     '\n 備註:${ds['Remarks']}'
+
+                                                     ),
+                                                  );*/
+                                                }else{
                                                return Center(
-
-                                                       child: Text( '非常抱歉 您還未新增您的個人訊息 請至新增填寫:'),
-                                                             );
-                                }
+                                                       child: Text( '非常抱歉 您還未新增您的個人訊息 請至新增填寫:'),);
+                                              }
                               }
-
                               else if (snapshot.hasError)
                                 return Text("ERROR: ${snapshot.error}");
                               else if(snapshot==null)
@@ -154,11 +170,11 @@ class taskView extends StatefulWidget {
                                     }
                        } ),*/
 
-                    Text(""),
-                    RaisedButton(
+                    //Text(""),
+                    /*RaisedButton(
                        child: Text('獲取任務訊息'),
                           onPressed: task_now_list,
-                )
+                )*/
               ]
             )
 
