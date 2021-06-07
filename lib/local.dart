@@ -31,7 +31,7 @@ class _local extends State<local> {
     );
   }
 
-  getLocal() async {
+  void getLocal() async {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       lo = position;

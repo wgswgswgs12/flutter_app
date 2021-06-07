@@ -7,7 +7,7 @@ class Story_UI extends StatelessWidget{
     return Scaffold(
       body:
         StoryPageView(
-        itemBuilder:(context,pageIndex,storyIndex){
+          itemBuilder:(context,pageIndex,storyIndex){
 
           return Center(
             child: Text("限時動態測試"),

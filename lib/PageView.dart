@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/conet.dart';
 import 'package:flutter_app/loginpage.dart';
 import 'package:flutter_app/test_for_ui/getwidget_testpage.dart';
@@ -14,22 +15,26 @@ import 'package:flutter_app/test_for_ui/Story_UI.dart';
 final pageView1=PageView(
 //controller: controller,
 children: [
-  loginpage(),
-  conet(),
-  local(),
+  //loginpage(),
+  //conet(),
+
+
   cloud(),
   UserInformation(),
-  //taskView(),//此頁顯示當前使用的任務
   userPersonalpage(),
-  MyHomePage(),
-  getwidget_testpage(),
-  Glass_UI(),
-  Story_UI()
+  //taskView(),//此頁顯示當前使用的任務
+
+  //MyHomePage(),
+ // getwidget_testpage(),
+ // Glass_UI(),
+  //Story_UI()
 ],
 );   //此處PageView做為一個陣列可以容納許多頁面支持左右滑動
 
 class pageView extends StatelessWidget{ //此處把pageView包成一頁，讓main可以載入
   Widget build(BuildContext context){
-      return pageView1;
+      return new Scaffold(
+        body:pageView1,
+      );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:getwidget/getwidget.dart';
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 var id;
 //Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -237,15 +238,30 @@ class cloud extends StatelessWidget {
     print(ref.id);
     */
   }
+
 }
 
 
 
 
 class UserInformation extends StatelessWidget {
+
+  CollectionReference users = FirebaseFirestore.instance.collection('task');
+  static  CollectionReference nowtask = FirebaseFirestore.instance.collection('nowtask');
+  static  bool enable_contrl =false;
+
+  static void check() async{
+    await nowtask.doc(userName).get().then((value){
+      if(value.data()['TaskuserName']!=null){
+        enable_contrl = true;
+      }else{ enable_contrl = false;}
+    });
+    print("is chaeck and set enable_contrl to  $enable_contrl");
+  }
+
   @override
    Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('task');
+
 
 
     //final List<DocumentSnapshot> documents = snapshot.data.docs.where((snapshot) => snapshot.data()["email"] !=userName);
@@ -276,12 +292,13 @@ class UserInformation extends StatelessWidget {
                   onTap: () {
 
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => RegisterPage_nomapidex(document.data()['userName'],document.data()['Remarks'],document.data()['reward'],document.data()['content'],document.data()['title'],userName)),);
+                      MaterialPageRoute(builder: (context) => RegisterPage_nomapidex(document.data()['userName'],document.data()['Remarks'],document.data()['reward'],document.data()['content'],document.data()['title'],userName,document.data()['latitude'],document.data()['longitude'])),);
                     print(document.data()['userName']+" "+" "+document.data()['longitude'].toString());
                     // do something
                   },
 
-                  enabled: document.data()['userName']==userName?false:true
+                  enabled: document.data()['userName']==userName
+                      ?false:true
 
               );
             }).toList(),
@@ -317,14 +334,15 @@ class UserInformation extends StatelessWidget {
                               document.data()['reward'],
                               document.data()['content'],
                               document.data()['title'],
-                              userName)),);
+                              userName,document.data()['latitude'],document.data()['longitude'])),);
                     print(document.data()['userName'] + " " + document
                         .data()['latitude'].toString() + " " + document
                         .data()['longitude'].toString());
                     // do something
                   },
 
-                  enabled: document.data()['userName'] == userName
+                  enabled:
+                  document.data()['userName'] == userName || enable_contrl
                       ? false
                       : true
 
@@ -345,7 +363,8 @@ class RegisterPage extends StatelessWidget {
   var reward;
   var content;
   var title;
-
+  var longitude;
+  var latitude;
   void getTask() async {
     if (userName == null) {
       print('請登入');
@@ -362,12 +381,17 @@ class RegisterPage extends StatelessWidget {
         'reward': reward,
         'content': content,
         'title': title,
-
+        'longitude':longitude,
+        'latitude':latitude,
       });
+      firestore.collection("task").doc(taskuserName).delete().then((_) {
+        print("success!");
+      });
+      UserInformation.check();
     }
   }
   RegisterPage(this.taskuserName, this.m, this.Remarks, this.reward,
-      this.content, this.title, this.myuserName);
+      this.content, this.title, this.myuserName,this.latitude,this.longitude);
 
   @override
   Widget build(BuildContext context) {
@@ -381,12 +405,17 @@ class RegisterPage extends StatelessWidget {
             child: Column(
 
                 children: <Widget>[
-                  Text(title.toString()),
+                  GFListTile(
+                      titleText:'$Title',
+                      subtitleText:'$content\n$reward\n$Remarks\n$userName\n距離:$m 公尺\n',
+                      icon: Icon(Icons.favorite)
+                  ),
+                 /* Text(title.toString()),
                   Text(content.toString()),
                   Text(reward.toString()),
                   Text(Remarks.toString()),
                   Text(userName.toString()),
-                  Text("距離" + m.toString() + "公尺"),
+                  Text("距離" + m.toString() + "公尺"),*/
                   RaisedButton(
                       child: Text('接受任務'),
                       onPressed: getTask
@@ -397,6 +426,7 @@ class RegisterPage extends StatelessWidget {
     );
   }
 }
+
   class RegisterPage_nomapidex extends StatelessWidget {
     var myuserName;
     var taskuserName;
@@ -405,10 +435,12 @@ class RegisterPage extends StatelessWidget {
     var reward;
     var content;
     var title;
-
+    var longitude;
+    var latitude;
+    CollectionReference task_to_remove = FirebaseFirestore.instance.collection('task');
 
     RegisterPage_nomapidex(this.taskuserName, this.Remarks, this.reward,
-        this.content, this.title, this.myuserName);
+        this.content, this.title, this.myuserName,this.latitude,this.longitude);
 
     @override
     Widget build(BuildContext context) {
@@ -422,11 +454,17 @@ class RegisterPage extends StatelessWidget {
               child: Column(
 
                   children: <Widget>[
+                         GFListTile(
+                          titleText:'$title',
+                          subtitleText:'任務內容說明:$content\n完成後的獎勵:$reward\n備註:$Remarks\n任務的發布者:$userName\n距離:請開啟定位後查看\n',
+                           icon: Icon(Icons.favorite)
+                        ),
+                      /*
                     Text(title.toString()),
                     Text(content.toString()),
                     Text(reward.toString()),
                     Text(Remarks.toString()),
-                    Text(userName.toString()),
+                    Text(userName.toString()),*/
 
                     RaisedButton(
                         child: Text('接受任務'),
@@ -455,8 +493,14 @@ class RegisterPage extends StatelessWidget {
           'reward': reward,
           'content': content,
           'title': title,
-
+          'longitude':longitude,
+          'latitude':latitude,
         });
+
+        firestore.collection("task").doc(taskuserName).delete().then((_) {
+          print("success!");
+        });
+        UserInformation.check();
       }
     }
   }

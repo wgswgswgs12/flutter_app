@@ -7,6 +7,42 @@ import 'package:flutter_app/taskView.dart';
 
 
 class userPersonalpage extends StatelessWidget{
+  var taskuserName;
+  var Remarks;
+  var reward;
+  var content;
+  var title;
+  var longitude;
+  var latitude;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  void delete() async{
+    print("完成0");
+    // var firebaseUser =  firestore.instance.currentUser;
+    await firestore.collection("nowTask").doc(userName).get().then((value) {
+      taskuserName = value.data()['TaskuserName'];
+      Remarks = value.data()['Remarks'];
+      reward = value.data()['reward'];
+      content = value.data()['content'];
+      title = value.data()['title'];
+      longitude= value.data()['longitude'];
+     latitude= value.data()['latitude'];
+    });
+print("完成1");
+    await firestore.collection("task").doc(taskuserName).set({
+      'latitude': latitude,
+      'longitude':longitude,
+      'userName': taskuserName,
+      'Remarks':Remarks,
+      'reward':reward,
+      'content':content,
+      'title':title,
+    });
+    print("完成2");
+    firestore.collection("nowTask").doc(userName).delete().then((_) {
+      print("已放棄當前任務並將任務放回任務列表");
+    });
+  }
   String userNickname="";
 
   int userBirthYear=0;
@@ -91,9 +127,10 @@ class userPersonalpage extends StatelessWidget{
                               content: Text("${ds['userIntroduction']}"),
                               buttonBar: GFButtonBar(
                                 children: <Widget>[
-                                  GFAvatar(
-                                    backgroundColor: GFColors.PRIMARY,
-                                    child: Icon(Icons.share, color: Colors.white,),
+                                  GFIconButton( icon:Icon(Icons.delete, color: Colors.white,),
+                                      onPressed:()=>delete()
+                                    //backgroundColor: GFColors.PRIMARY,
+
                                   ),
                                   GFIconButton( icon: Icon(Icons.search,color: Colors.white,) ,
                                       onPressed:()=> Navigator.push(context,

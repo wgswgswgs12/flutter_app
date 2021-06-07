@@ -114,8 +114,8 @@ class taskView extends StatefulWidget {
 
                               if (snapshot.hasData) {
                                       DocumentSnapshot ds=snapshot.data;
-                                       if(ds.exists) {
-                                            return GFAccordion(
+                                       if(ds.exists) {return
+                                              GFAccordion(
                                                 title: '${ds['title']}',
                                                 content: '發布人: ${ds['TaskuserName']} '
                                                     '\n 內容: ${ds['content']}'
@@ -140,7 +140,14 @@ class taskView extends StatefulWidget {
                                                   );*/
                                                 }else{
                                                return Center(
-                                                       child: Text( '非常抱歉 您還未新增您的個人訊息 請至新增填寫:'),);
+                                                       child: GFAccordion(
+                                                         title: '您還沒有新增任務!',
+                                                         content: '請到任務列表選擇您想要完成的任務!',
+                                                         collapsedIcon: Icon(Icons.add),
+                                                         expandedIcon: Icon(Icons.minimize),
+                                                         showAccordion:true,
+
+                                                       ),);
                                               }
                               }
                               else if (snapshot.hasError)

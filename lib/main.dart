@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
 
-      home :Scaffold(
+      home :Scaffold(body:loginpage(),
         /*
        // backgroundColor: Theme.of(context).primaryColor,
          bottomNavigationBar: CurvedNavigationBar(
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
             ],
           ),
 */
-          body:pageView(),
+         // body:pageView(),
 
       )
 

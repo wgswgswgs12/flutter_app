@@ -7,6 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import "PageView.dart";
 import 'taskView.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_app/userIformation/userPersonalpage.dart';
+import 'cloud.dart';
 var userName;
 
 
@@ -17,12 +19,11 @@ class loginpage extends StatelessWidget {
   Future<User> _signIn() async {
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     GoogleSignInAuthentication gSA = await googleSignInAccount.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    final GoogleAuthCredential credential = await GoogleAuthProvider.credential(
         idToken: gSA.idToken,
         accessToken: gSA.accessToken
     );
-    final UserCredential authResult =
-    await _auth.signInWithCredential(credential);
+    final UserCredential authResult = await _auth.signInWithCredential(credential);
 
     User user = authResult.user;
     userName = user.displayName;
@@ -50,9 +51,14 @@ class loginpage extends StatelessWidget {
             SignInButton(
             Buttons.GoogleDark,
             text: "Sign up with Google",
-            onPressed: () =>
-                _signIn().then((User user) => print(user)).catchError((e) =>
-                    print(e)),
+            onPressed: () {
+                _signIn().then((User user) => print(user)).catchError((e) => print(e));
+                Navigator.pushReplacement(context, MaterialPageRoute<void>(
+                  builder: (BuildContext context) => pageView(),
+                  fullscreenDialog: true,
+                ));
+            }
+
           ),
           RaisedButton(child: Text('login'),
             onPressed: () =>
